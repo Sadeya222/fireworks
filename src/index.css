@@ -1,0 +1,292 @@
+@import "tailwindcss";
+
+/* ============================================================
+   CLASSIC FIREWORKS — Design Tokens (Tailwind v4 CSS-first)
+   Regal night-sky palette extracted from the brand emblem:
+   burnished gold, venetian crimson, midnight obsidian, ivory.
+   ============================================================ */
+@theme {
+  --color-obsidian-950: #08090c;
+  --color-obsidian-900: #0f1117;
+  --color-obsidian-850: #12141c;
+  --color-obsidian-800: #161926;
+  --color-obsidian-700: #1f2333;
+
+  --color-gold-100: #f7efd8;
+  --color-gold-200: #efe0ae;
+  --color-gold-300: #e8ce7c;
+  --color-gold-400: #d4af37;
+  --color-gold-500: #c5a059;
+  --color-gold-600: #9a7b2d;
+
+  --color-crimson-400: #d8434a;
+  --color-crimson-500: #c22b2e;
+  --color-crimson-600: #9a1b1e;
+  --color-crimson-700: #8b0000;
+  --color-crimson-800: #5e0a0c;
+  --color-crimson-900: #38060a;
+
+  --color-ivory: #fdfbf7;
+
+  --font-display: "Cinzel", "Times New Roman", serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-obsidian-950);
+  color: var(--color-ivory);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-gold-400);
+  color: var(--color-obsidian-950);
+}
+
+/* Slim, gilded scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-obsidian-950);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-gold-600), var(--color-crimson-800));
+  border-radius: 99px;
+}
+
+/* ============================================================
+   Film grain — animated procedural noise (SVG turbulence)
+   ============================================================ */
+.grain-layer {
+  position: absolute;
+  inset: -60%;
+  width: 220%;
+  height: 220%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  animation: grain-shift 1.3s steps(6) infinite;
+  will-change: transform;
+}
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4%, 3%); }
+  40% { transform: translate(3%, -5%); }
+  60% { transform: translate(-3%, -2%); }
+  80% { transform: translate(4%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ============================================================
+   Marquee ticker (GPU transform only)
+   ============================================================ */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-dur, 46s) linear infinite;
+  will-change: transform;
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* Cinematic scroll cue — line drawing itself down/up */
+.scroll-cue {
+  animation: cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes cue {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ============================================================
+   Navigation links — gilded hairline underline
+   ============================================================ */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold-400), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.22s ease;
+}
+.nav-link:hover::after,
+.nav-link[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* ============================================================
+   Service tier cards — metallic gold edge-glow (<200ms film timing)
+   ============================================================ */
+.tier-card {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  background: linear-gradient(165deg, #12141d 0%, #0a0c12 62%);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+  will-change: transform;
+}
+/* Inner gold frame that fades in on hover */
+.tier-card::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+/* Travelling light sheen */
+.tier-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 42%, rgba(253, 251, 247, 0.055) 50%, transparent 58%);
+  transform: translateX(-130%);
+  transition: transform 0.55s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Hover choreography only on devices that can actually hover —
+   touch screens keep a static, crisp card (no sticky hover states). */
+@media (hover: hover) and (pointer: fine) {
+  .tier-card:hover {
+    border-color: rgba(212, 175, 55, 0.55);
+    box-shadow:
+      0 0 46px -14px rgba(212, 175, 55, 0.42),
+      inset 0 0 26px -20px rgba(212, 175, 55, 0.65);
+    transform: translateY(-3px);
+  }
+  .tier-card:hover::before { opacity: 1; }
+  .tier-card:hover::after { transform: translateX(130%); }
+}
+
+/* ============================================================
+   Form fields — dark, gilded, cinematic
+   ============================================================ */
+.field {
+  width: 100%;
+  min-height: 48px; /* comfortable touch target */
+  border-radius: 2px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: rgba(253, 251, 247, 0.035);
+  padding: 0.78rem 0.95rem;
+  color: var(--color-ivory);
+  font-size: 1rem; /* ≥16px prevents iOS focus-zoom */
+  letter-spacing: 0.01em;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+@media (min-width: 768px) {
+  .field { font-size: 0.925rem; }
+}
+.field::placeholder { color: rgba(253, 251, 247, 0.28); }
+.field:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.8);
+  background: rgba(253, 251, 247, 0.055);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+}
+.field-invalid {
+  border-color: rgba(216, 67, 74, 0.8);
+  background: rgba(139, 0, 0, 0.08);
+}
+.field-invalid:focus {
+  border-color: rgba(216, 67, 74, 0.95);
+  box-shadow: 0 0 0 3px rgba(194, 43, 46, 0.18);
+}
+
+/* Success modal aura — opacity-only pulse keeps it on the compositor */
+.success-aura {
+  animation: aura-pulse 2.6s ease-in-out infinite;
+}
+@keyframes aura-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+select.field option { background: #12141c; color: var(--color-ivory); }
+select.field-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 2.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D4AF37' stroke-width='1.4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+}
+input[type="date"].field::-webkit-calendar-picker-indicator {
+  filter: invert(0.75) sepia(0.9) saturate(3.4) hue-rotate(2deg);
+  cursor: pointer;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #e5c860 0%, #d4af37 55%, #bd9630 100%);
+  color: #120d04;
+  transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-gold:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 8px 34px -10px rgba(212, 175, 55, 0.55);
+  transform: translateY(-1px);
+}
+.btn-gold:active { transform: translateY(0); }
+.btn-ghost {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--color-gold-200);
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+.btn-ghost:hover {
+  border-color: rgba(212, 175, 55, 0.9);
+  background: rgba(212, 175, 55, 0.08);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   Accessibility — honor prefers-reduced-motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  /* Global clamp: every CSS animation/transition collapses to a single frame */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Static equivalents for decorative motion */
+  .marquee-track { animation: none; transform: none; }
+  .grain-layer { animation: none; }
+  .scroll-cue { animation: none; transform: scaleY(1); }
+  .success-aura { animation: none; opacity: 0.8; }
+  .tier-card:hover { transform: none; }
+  .tier-card::after { display: none; }
+}
